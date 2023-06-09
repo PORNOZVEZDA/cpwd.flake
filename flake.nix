@@ -3,8 +3,11 @@
 
   outputs = { self, nixpkgs }: 
   let
-  system = "x86_64-linux";
-  pkgs = import nixpkgs {inherit system;};
+  supportedSystems = ["x86_64-linux" "aarch64-linux"];
+  forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+
+  nixpkgsFor = forAllSystems ( system: import nixpkgs { inherit system; } );
+
   in
   {
     ## examples from nixpkgs
@@ -22,7 +25,16 @@
      #  fetchgit = pkgs.fetchgit;
      ## <everything else>...
      #  };
-    packages.x86_64-linux.cpwd = pkgs.callPackage ./. {};
-    packages.x86_64-linux.default = self.packages.x86_64-linux.cpwd;
+
+    ## previous, not platform-agnostic way of specifying outputs
+    #packages.x86_64-linux.cpwd = pkgs.callPackage ./. {};
+    #packages.x86_64-linux.default = self.packages.x86_64-linux.cpwd;
+
+    packages = forAllSystems( system:
+    {
+       cpwd = nixpkgsFor.${system}.callPackage ./. {};
+       default = self.packages.${system}.cpwd;
+    }
+    );
   };
 }
