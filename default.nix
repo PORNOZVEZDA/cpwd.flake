@@ -1,13 +1,11 @@
 {
 	stdenv,
   fetchgit,
-  raylib,
-  gnutar,
 	...
 }: 
 stdenv.mkDerivation {
-  pname = "tommywiseaue";
-  version="v3.0.0";
+  pname = "cpwd";
+  version="0.0.1";
 
   src = fetchgit{
     #url = "https://github.com/postboy/cpwd";
@@ -16,20 +14,19 @@ stdenv.mkDerivation {
     sha256 = "1h7nhg7ym5rnxlahxklp4ccdyybvjhl2a594k1dic620w0dnk2zd";
 
   };
-	builtInputs = [raylib];
+	builtInputs = [];
   buildPhase = ''
   cd $src
-
   mkdir -p $out/bin
   cpwd_out=$out/bin/cpwd
-  $src/build.sh
+  $src/build.sh $cpwd_out
   #ls $src
 
   '';
 
   installPhase = ''
-  mkdir $out/bin
-  $src
+  # there could be step with copying compiled binary to $out/bin/out name
+  # but we already do it during build step.
 
   '';
 }
