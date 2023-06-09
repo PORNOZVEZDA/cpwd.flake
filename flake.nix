@@ -3,7 +3,7 @@
 
   outputs = { self, nixpkgs }: 
   let
-  supportedSystems = ["x86_64-linux" "aarch64-linux"];
+  supportedSystems = ["aarch64-linux" "x86_64-linux" ];
   forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
 
   nixpkgsFor = forAllSystems ( system: import nixpkgs { inherit system; } );
@@ -30,6 +30,7 @@
     #packages.x86_64-linux.cpwd = pkgs.callPackage ./. {};
     #packages.x86_64-linux.default = self.packages.x86_64-linux.cpwd;
 
+    defaultPackage = forAllSystems (system: self.packages.${system}.cpwd);
     packages = forAllSystems( system:
     {
        cpwd = nixpkgsFor.${system}.callPackage ./. {};
